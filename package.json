@@ -1,0 +1,13 @@
+{
+  "name": "depromeet-9team-game",
+  "packageManager": "yarn@3.0.2",
+  "workspaces": [
+    "games/*/**"
+  ],
+  "resolutions": {
+    "typescript": "4.3.5"
+  },
+  "dependencies": {
+    "typescript": "4.3.5"
+  }
+}
