@@ -9,5 +9,8 @@
   },
   "dependencies": {
     "typescript": "4.3.5"
+  },
+  "devDependencies": {
+    "@types/websocket": "^1.0.4"
   }
 }

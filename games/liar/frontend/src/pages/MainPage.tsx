@@ -1,22 +1,32 @@
 import styled from '@emotion/styled';
+import { useEffect } from 'react';
 import { ChangeEvent, FormEvent, useState } from 'react';
 import { FC } from 'react';
 import { useHistory } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Selector from '../components/Selector';
-interface RoomCreateData {
+import roomAPI from '../libs/apis/room';
+export interface RoomCreateData {
     topic: string,
     name: string,
 }
 const MainPage: FC = () => {
-    const topics = ["게임", "음악"];
+    const [topics, setTopics] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [form, setForm] = useState<RoomCreateData>({
         name: "",
-        topic: "게임",
+        topic: "음식",
     });
     const history = useHistory();
     const { topic, name } = form;
+    useEffect(()=>{
+        (async()=>{
+            const { data } = await roomAPI.getTopics();
+            setTopics(data.topics);
+
+        })()
+        .then((res)=>console.log(res));
+    },[])
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
         const { name, value } = e.target;
         setForm({
@@ -24,16 +34,25 @@ const MainPage: FC = () => {
             [name]: value
         })
     }
-    const onSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
+        if(loading) { return }
+        if(!name) { alert("닉네임을 입력하세요!"); return } 
         setLoading(true);
+        try{
+            const { data } = await roomAPI.createRoom(form);
+            history.push(`/room/${data}/${name}`);
+        } catch(e){
+            alert("실패");
+        } 
+        setLoading(false);
     }
     const onJoin = () => {
         if(name){
             const answer = prompt("초대코드를 입력하세요: ");
-            answer && history.push(`/room/${answer}`);
+            answer && history.push(`/room/${answer}/${name}`);
         }
-        else  alert("닉네임을 입력하세요!");   
+        else alert("닉네임을 입력하세요!");   
     }
     return(
         <Block>
@@ -44,7 +63,7 @@ const MainPage: FC = () => {
             </div>
             <Form onSubmit={onSubmit} className="">
                 <input onChange={onChangeHandler} value={name} name="name" placeholder="닉네임을 입력해주세요."></input>
-                <Selector name="topic" topics={topics} value={topic} onChange={onChangeHandler}></Selector>
+                <Selector value={topic} name="topic" topics={topics} onChange={onChangeHandler}></Selector>
                 <button type="submit">
                     {loading && <LoadingSpinner/>}
                     방 만들기
