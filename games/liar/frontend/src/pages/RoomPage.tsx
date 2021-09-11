@@ -47,7 +47,7 @@ const RoomPage: FC<RouteComponentProps<Props>> = ({match}) => {
                 setSubject("");
                 setSelect("");
                 setResult([]);
-                
+
                 alert(`${winner}의 승리`);
 
             }
@@ -60,14 +60,22 @@ const RoomPage: FC<RouteComponentProps<Props>> = ({match}) => {
         })
     }
     function onStart(){
-        stompClient.current.publish({
-            destination: `/pub/game/${code}`,
-        })
+        if(users[0] === name){
+            stompClient.current.publish({
+                destination: `/pub/game/${code}`,
+            })
+        } else{
+            alert("방장이 아니에요!")
+        }
     }
     function onStop(){ 
-        stompClient.current.publish({
-            destination: `/pub/game/finish/${code}`,
-        })
+        if(users[0] === name){
+            stompClient.current.publish({
+                destination: `/pub/game/finish/${code}`,
+            })
+        } else{
+            alert("방장이 아니에요!")
+        }
     }
     function onSelect(name: string){
         isStart && setSelect(name);
