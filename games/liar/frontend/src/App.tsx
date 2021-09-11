@@ -9,7 +9,7 @@ function App() {
     <Layout>
       <Global styles={globalStyle}></Global>
       <Router>
-        <Route path="/room/:code/:name" component={RoomPage} exact></Route>
+        <Route path="/room/:code" component={RoomPage} exact></Route>
         <Route path="/" component={MainPage} exact></Route> 
       </Router> 
     </Layout>

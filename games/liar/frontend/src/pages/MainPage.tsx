@@ -6,6 +6,7 @@ import { useHistory } from 'react-router-dom';
 import LoadingSpinner from '../components/LoadingSpinner';
 import Selector from '../components/Selector';
 import roomAPI from '../libs/apis/room';
+
 export interface RoomCreateData {
     topic: string,
     name: string,
@@ -14,7 +15,7 @@ const MainPage: FC = () => {
     const [topics, setTopics] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(false);
     const [form, setForm] = useState<RoomCreateData>({
-        name: "",
+        name: localStorage.name,
         topic: "음식",
     });
     const history = useHistory();
@@ -28,7 +29,8 @@ const MainPage: FC = () => {
         .then((res)=>console.log(res));
     },[])
     const onChangeHandler = (e: ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-        const { name, value } = e.target;
+        const { name, value } = e.target; 
+        name==="name" && localStorage.setItem("name", value);
         setForm({
             ...form, 
             [name]: value
@@ -41,7 +43,7 @@ const MainPage: FC = () => {
         setLoading(true);
         try{
             const { data } = await roomAPI.createRoom(form);
-            history.push(`/room/${data}/${name}`);
+            history.push(`/room/${data}`);
         } catch(e){
             alert("실패");
         } 
@@ -50,7 +52,7 @@ const MainPage: FC = () => {
     const onJoin = () => {
         if(name){
             const answer = prompt("초대코드를 입력하세요: ");
-            answer && history.push(`/room/${answer}/${name}`);
+            answer && history.push(`/room/${answer}`);
         }
         else alert("닉네임을 입력하세요!");   
     }
